@@ -1,0 +1,41 @@
+{
+  "model_type": "Specialized Diabetes Predictor",
+  "selected_model": "Logistic Regression",
+  "comparison": {
+    "Random Forest": {
+      "test_accuracy": 88.75,
+      "precision": 87.5,
+      "recall": 96.08,
+      "f1_score": 91.59,
+      "roc_auc": 97.16,
+      "cv_accuracy": 92.19
+    },
+    "Logistic Regression": {
+      "test_accuracy": 100.0,
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1_score": 100.0,
+      "roc_auc": 100.0,
+      "cv_accuracy": 98.59
+    },
+    "SVM (RBF)": {
+      "test_accuracy": 93.12,
+      "precision": 92.52,
+      "recall": 97.06,
+      "f1_score": 94.74,
+      "roc_auc": 98.85,
+      "cv_accuracy": 95.47
+    }
+  },
+  "features": [
+    "Pregnancies",
+    "Glucose",
+    "BloodPressure",
+    "SkinThickness",
+    "Insulin",
+    "BMI",
+    "DiabetesPedigreeFunction",
+    "Age"
+  ],
+  "samples_count": 800
+}

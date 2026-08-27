@@ -1,0 +1,55 @@
+{
+  "model_type": "Specialized Parkinson's Predictor",
+  "selected_model": "Logistic Regression",
+  "comparison": {
+    "Random Forest": {
+      "test_accuracy": 87.78,
+      "precision": 87.64,
+      "recall": 100.0,
+      "f1_score": 93.41,
+      "roc_auc": 93.75,
+      "cv_accuracy": 89.17
+    },
+    "SVM (RBF)": {
+      "test_accuracy": 88.89,
+      "precision": 88.64,
+      "recall": 100.0,
+      "f1_score": 93.98,
+      "roc_auc": 92.63,
+      "cv_accuracy": 94.17
+    },
+    "Logistic Regression": {
+      "test_accuracy": 94.44,
+      "precision": 95.06,
+      "recall": 98.72,
+      "f1_score": 96.86,
+      "roc_auc": 98.82,
+      "cv_accuracy": 96.94
+    }
+  },
+  "features": [
+    "MDVP:Fo(Hz)",
+    "MDVP:Fhi(Hz)",
+    "MDVP:Flo(Hz)",
+    "MDVP:Jitter(%)",
+    "MDVP:Jitter(Abs)",
+    "MDVP:RAP",
+    "MDVP:PPQ",
+    "Jitter:DDP",
+    "MDVP:Shimmer",
+    "MDVP:Shimmer(dB)",
+    "Shimmer:APQ3",
+    "Shimmer:APQ5",
+    "MDVP:APQ",
+    "Shimmer:DDA",
+    "NHR",
+    "HNR",
+    "RPDE",
+    "DFA",
+    "spread1",
+    "spread2",
+    "D2",
+    "PPE"
+  ],
+  "samples_count": 450
+}

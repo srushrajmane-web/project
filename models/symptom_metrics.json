@@ -1,0 +1,298 @@
+{
+  "model_type": "Multi-Class Symptom Classifier",
+  "selected_model": "Random Forest",
+  "num_features": 131,
+  "num_classes": 41,
+  "total_training_samples": 4920,
+  "total_testing_samples": 820,
+  "comparison": {
+    "Random Forest": {
+      "test_accuracy": 100.0,
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1_score": 100.0,
+      "cv_accuracy_mean": 100.0,
+      "cv_accuracy_std": 0.0
+    },
+    "Naive Bayes": {
+      "test_accuracy": 100.0,
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1_score": 100.0,
+      "cv_accuracy_mean": 100.0,
+      "cv_accuracy_std": 0.0
+    },
+    "Decision Tree": {
+      "test_accuracy": 87.8,
+      "precision": 85.77,
+      "recall": 87.8,
+      "f1_score": 86.06,
+      "cv_accuracy_mean": 84.94,
+      "cv_accuracy_std": 2.37
+    },
+    "Logistic Regression": {
+      "test_accuracy": 100.0,
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1_score": 100.0,
+      "cv_accuracy_mean": 100.0,
+      "cv_accuracy_std": 0.0
+    },
+    "SVM (RBF)": {
+      "test_accuracy": 100.0,
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1_score": 100.0,
+      "cv_accuracy_mean": 99.92,
+      "cv_accuracy_std": 0.16
+    }
+  },
+  "per_class_metrics": {
+    "(vertigo) Paroymsal  Positional Vertigo": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "AIDS": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Acne": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Alcoholic hepatitis": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Allergy": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Arthritis": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Bronchial Asthma": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Cervical spondylosis": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Chicken pox": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Chronic cholestasis": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Common Cold": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Dengue": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Diabetes ": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Dimorphic hemmorhoids(piles)": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Drug Reaction": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Fungal infection": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "GERD": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Gastroenteritis": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Heart attack": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Hepatitis B": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Hepatitis C": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Hepatitis D": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Hepatitis E": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Hypertension ": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Hyperthyroidism": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Hypoglycemia": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Hypothyroidism": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Impetigo": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Jaundice": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Malaria": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Migraine": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Osteoarthritis": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Paralysis (brain hemorrhage)": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Peptic ulcer disease": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Pneumonia": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Psoriasis": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Tuberculosis": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Typhoid": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Urinary tract infection": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "Varicose veins": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    },
+    "hepatitis A": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1-score": 100.0,
+      "support": 20.0
+    }
+  }
+}

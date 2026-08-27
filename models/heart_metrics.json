@@ -1,0 +1,46 @@
+{
+  "model_type": "Specialized Heart Disease Predictor",
+  "selected_model": "Logistic Regression",
+  "comparison": {
+    "Random Forest": {
+      "test_accuracy": 88.57,
+      "precision": 86.92,
+      "recall": 97.89,
+      "f1_score": 92.08,
+      "roc_auc": 95.8,
+      "cv_accuracy": 88.75
+    },
+    "Logistic Regression": {
+      "test_accuracy": 97.86,
+      "precision": 96.94,
+      "recall": 100.0,
+      "f1_score": 98.45,
+      "roc_auc": 100.0,
+      "cv_accuracy": 98.21
+    },
+    "SVM (RBF)": {
+      "test_accuracy": 96.43,
+      "precision": 96.88,
+      "recall": 97.89,
+      "f1_score": 97.38,
+      "roc_auc": 99.35,
+      "cv_accuracy": 94.46
+    }
+  },
+  "features": [
+    "age",
+    "sex",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "samples_count": 700
+}

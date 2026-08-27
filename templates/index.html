@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Disease Diagnosis System — Full-Stack ML Healthcare Application</title>
+    <meta name="description"
+        content="An end-to-end ML-powered clinical decision support system featuring multi-class symptom prediction, specialized disease predictors, AI assistant, and provider locator.">
+
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Leaflet Maps CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+
+<body>
+
+    <!-- ==========================================================================
+         Top Navigation Header
+         ========================================================================== -->
+    <header class="top-navbar">
+        <a href="/" class="brand-logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <div class="brand-title">
+                <span>MediCare AI</span>
+                <span class="sub">Clinical Diagnostic Suite</span>
+            </div>
+        </a>
+
+        <!-- Main Navigation Tabs -->
+        <nav class="nav-center">
+            <button class="nav-tab-btn active" data-tab="symptoms">
+                <i class="fa-solid fa-stethoscope"></i> <span>Symptom Checker</span>
+            </button>
+            <button class="nav-tab-btn" data-tab="specialized">
+                <i class="fa-solid fa-microscope"></i> <span>Specialized Labs</span>
+            </button>
+            <button class="nav-tab-btn" data-tab="chat">
+                <i class="fa-solid fa-comment-medical"></i> <span>AI Assistant</span>
+            </button>
+            <button class="nav-tab-btn" data-tab="locator">
+                <i class="fa-solid fa-hospital"></i> <span>Hospital Locator</span>
+            </button>
+            <button class="nav-tab-btn" data-tab="knowledge">
+                <i class="fa-solid fa-book-medical"></i> <span>Knowledge Base</span>
+            </button>
+            <button class="nav-tab-btn" data-tab="history">
+                <i class="fa-solid fa-chart-line"></i> <span>Health Records</span>
+            </button>
+            <button class="nav-tab-btn" data-tab="admin">
+                <i class="fa-solid fa-sliders"></i> <span>ML Observatory</span>
+            </button>
+        </nav>
+
+        <!-- Right Side Actions & Auth -->
+        <div class="nav-right-actions">
+            <button class="emergency-btn" onclick="openModal('emergency-hotline-modal')">
+                <i class="fa-solid fa-phone-volume"></i> <span>Emergency</span>
+            </button>
+            <div id="user-auth-badge-container">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         Medical Disclaimer & Triage Notice Strip
+         ========================================================================== -->
+    <div class="disclaimer-strip">
+        <div class="left">
+            <span class="badge-tag">Clinical Decision Support</span>
+            <span>Educational & research reference platform. For life-threatening emergencies, seek immediate emergency
+                medical care.</span>
+        </div>
+        <div>
+            <a href="/docs" target="_blank" style="color:var(--accent-cyan); text-decoration:none; font-weight:600;">
+                <i class="fa-solid fa-code"></i> REST API Docs
+            </a>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         Main Workspace Container
+         ========================================================================== -->
+    <main class="app-container">
+
+        <!-- ======================================================================
+             TAB 1: General Multi-Class Symptom Predictor
+             ====================================================================== -->
+        <section id="tab-symptoms" class="tab-pane active">
+            <div class="symptom-checker-grid">
+
+                <!-- Left Column: Search, Categories, Cloud, Selected Symptoms -->
+                <div class="glass-card">
+                    <div class="glass-card-header">
+                        <div>
+                            <h2 class="card-title"><i class="fa-solid fa-clipboard-check"
+                                    style="color:var(--accent-cyan);"></i> Patient Symptom Intake</h2>
+                            <p class="card-subtitle">Search or select from 132 standardized clinical symptom indicators
+                            </p>
+                        </div>
+                        <button class="btn-secondary" style="font-size:0.75rem;" onclick="clearAllSymptoms()">
+                            <i class="fa-solid fa-rotate-left"></i> Reset
+                        </button>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="symptom-search-bar">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="symptom-search-input" class="search-input"
+                            placeholder="Type symptoms (e.g. fever, chest pain, rash, nausea)...">
+                    </div>
+
+                    <!-- Category Pills Filter -->
+                    <div class="category-filter-chips" id="category-chips-container">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Symptoms Cloud Box -->
+                    <div class="symptoms-cloud-container" id="symptoms-cloud">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Selected Symptoms Drawer -->
+                    <div class="selected-symptoms-tray">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span
+                                style="font-size:0.82rem; font-weight:700; text-transform:uppercase; color:var(--text-secondary);">
+                                Active Selected Symptoms
+                            </span>
+                            <span id="selected-count-badge" class="badge-tag">0 selected</span>
+                        </div>
+                        <div class="selected-tags-flex" id="selected-symptoms-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Clinical Scenario Presets -->
+                    <div class="presets-container">
+                        <span style="font-size:0.75rem; font-weight:600; color:var(--text-muted);">Quick Presets:</span>
+                        <button class="preset-pill" onclick="applySymptomPreset('pneumonia')">Pneumonia</button>
+                        <button class="preset-pill" onclick="applySymptomPreset('dengue')">Dengue Fever</button>
+                        <button class="preset-pill" onclick="applySymptomPreset('gerd')">GERD Reflux</button>
+                        <button class="preset-pill" onclick="applySymptomPreset('migraine')">Migraine</button>
+                        <button class="preset-pill" onclick="applySymptomPreset('typhoid')">Typhoid</button>
+                        <button class="preset-pill" onclick="applySymptomPreset('allergy')">Allergy</button>
+                    </div>
+
+                    <!-- Additional Notes (Optional) -->
+                    <div style="margin-top:12px;">
+                        <input type="text" id="symptom-patient-notes" class="form-control"
+                            placeholder="Optional notes (duration, history, medications)...">
+                    </div>
+
+                    <!-- Run Prediction Action -->
+                    <button id="run-symptom-predict-btn" class="primary-action-btn" disabled>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Run Differential Diagnosis
+                    </button>
+                </div>
+
+                <!-- Right Column: Results & Enriched Info Panel -->
+                <div class="glass-card" id="diagnosis-results-card">
+                    <div class="diagnosis-empty-state">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        <h3 style="font-size:1.2rem; font-weight:700; color:#fff; margin-bottom:6px;">No Active
+                            Diagnosis Yet</h3>
+                        <p style="font-size:0.88rem; max-width:380px;">Select symptoms on the left and click <strong>Run
+                                Differential Diagnosis</strong> to evaluate probable medical conditions with machine
+                            learning.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             TAB 2: Specialized Clinical Diagnostic Labs
+             ====================================================================== -->
+        <section id="tab-specialized" class="tab-pane">
+            <div class="specialized-nav-tabs">
+                <button class="spec-tab-btn active" data-spec="diabetes">
+                    <i class="fa-solid fa-droplet" style="color:#38bdf8;"></i> Diabetes Mellitus Predictor (Pima
+                    Indians)
+                </button>
+                <button class="spec-tab-btn" data-spec="heart">
+                    <i class="fa-solid fa-heart-crack" style="color:#f43f5e;"></i> Cardiovascular Heart Disease
+                    (Cleveland)
+                </button>
+                <button class="spec-tab-btn" data-spec="parkinsons">
+                    <i class="fa-solid fa-brain" style="color:#a855f7;"></i> Parkinson's Voice Biomarker Analyzer
+                </button>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:1.5rem;">
+
+                <!-- Left: Form Input Controls -->
+                <div class="glass-card">
+
+                    <!-- Diabetes Diagnostic Form -->
+                    <div id="spec-form-diabetes">
+                        <div class="glass-card-header">
+                            <div>
+                                <h3 class="card-title"><i class="fa-solid fa-droplet"
+                                        style="color:var(--accent-cyan);"></i> Diabetes Clinical Form</h3>
+                                <p class="card-subtitle">Pima Indians metabolic markers & insulin sensitivity indicators
+                                </p>
+                            </div>
+                            <div class="presets-container" style="margin:0;">
+                                <button type="button" class="preset-pill"
+                                    onclick="applySpecializedPreset('diabetes', 'healthy')">Healthy</button>
+                                <button type="button" class="preset-pill"
+                                    onclick="applySpecializedPreset('diabetes', 'prediabetic')">Pre-Diabetic</button>
+                                <button type="button" class="preset-pill"
+                                    onclick="applySpecializedPreset('diabetes', 'highrisk')">High Risk</button>
+                            </div>
+                        </div>
+
+                        <form id="form-diabetes-prediction">
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label>Fasting Plasma Glucose (mg/dL)</label>
+                                    <input type="number" id="diab-glucose" class="form-control" value="120" min="40"
+                                        max="350" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Body Mass Index (BMI kg/m²)</label>
+                                    <input type="number" step="0.1" id="diab-bmi" class="form-control" value="25.0"
+                                        min="10" max="70" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Patient Age (Years)</label>
+                                    <input type="number" id="diab-age" class="form-control" value="30" min="1" max="120"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Diastolic Blood Pressure (mm Hg)</label>
+                                    <input type="number" id="diab-bp" class="form-control" value="70" min="30" max="200"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>2-Hour Serum Insulin (mu U/ml)</label>
+                                    <input type="number" id="diab-insulin" class="form-control" value="79" min="0"
+                                        max="900" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Pregnancies Count</label>
+                                    <input type="number" id="diab-pregnancies" class="form-control" value="0" min="0"
+                                        max="25" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Triceps Skinfold Thickness (mm)</label>
+                                    <input type="number" id="diab-skinthickness" class="form-control" value="20" min="0"
+                                        max="100" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Diabetes Pedigree Function (DPF)</label>
+                                    <input type="number" step="0.01" id="diab-dpf" class="form-control" value="0.47"
+                                        min="0.01" max="3.0" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="primary-action-btn">
+                                <i class="fa-solid fa-chart-pie"></i> Calculate Diabetes Probability
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Heart Disease Diagnostic Form -->
+                    <div id="spec-form-heart" style="display:none;">
+                        <div class="glass-card-header">
+                            <div>
+                                <h3 class="card-title"><i class="fa-solid fa-heart-crack"
+                                        style="color:var(--accent-rose);"></i> Cardiovascular Risk Form</h3>
+                                <p class="card-subtitle">UCI Cleveland cardiovascular and electrocardiogram features</p>
+                            </div>
+                            <div class="presets-container" style="margin:0;">
+                                <button type="button" class="preset-pill"
+                                    onclick="applySpecializedPreset('heart', 'normal')">Normal Profile</button>
+                                <button type="button" class="preset-pill"
+                                    onclick="applySpecializedPreset('heart', 'highrisk')">High Cardiac Risk</button>
+                            </div>
+                        </div>
+
+                        <form id="form-heart-prediction">
+                            <div class="form-grid-3">
+                                <div class="form-group">
+                                    <label>Age</label>
+                                    <input type="number" id="heart-age" class="form-control" value="50" min="18"
+                                        max="100" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sex</label>
+                                    <select id="heart-sex" class="form-control">
+                                        <option value="1">Male</option>
+                                        <option value="0">Female</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Chest Pain Type (CP)</label>
+                                    <select id="heart-cp" class="form-control">
+                                        <option value="0">0 - Typical Angina</option>
+                                        <option value="1">1 - Atypical Angina</option>
+                                        <option value="2">2 - Non-Anginal Pain</option>
+                                        <option value="3">3 - Asymptomatic</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Resting BP (mm Hg)</label>
+                                    <input type="number" id="heart-trestbps" class="form-control" value="120" min="80"
+                                        max="250" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Serum Cholesterol (mg/dL)</label>
+                                    <input type="number" id="heart-chol" class="form-control" value="200" min="100"
+                                        max="600" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fasting Blood Sugar > 120</label>
+                                    <select id="heart-fbs" class="form-control">
+                                        <option value="0">False (<= 120 mg/dL)</option>
+                                        <option value="1">True (> 120 mg/dL)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Resting ECG</label>
+                                    <select id="heart-restecg" class="form-control">
+                                        <option value="0">0 - Normal</option>
+                                        <option value="1">1 - ST-T Abnormality</option>
+                                        <option value="2">2 - Left Ventricular Hypertrophy</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Heart Rate Achieved</label>
+                                    <input type="number" id="heart-thalach" class="form-control" value="150" min="60"
+                                        max="230" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Exercise Induced Angina</label>
+                                    <select id="heart-exang" class="form-control">
+                                        <option value="0">No (0)</option>
+                                        <option value="1">Yes (1)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>ST Depression (Oldpeak)</label>
+                                    <input type="number" step="0.1" id="heart-oldpeak" class="form-control" value="0.0"
+                                        min="0.0" max="10.0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>ST Slope</label>
+                                    <select id="heart-slope" class="form-control">
+                                        <option value="0">0 - Upsloping</option>
+                                        <option value="1" selected>1 - Flat</option>
+                                        <option value="2">2 - Downsloping</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Major Vessels (CA: 0-4)</label>
+                                    <input type="number" id="heart-ca" class="form-control" value="0" min="0" max="4"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Thalassemia Type</label>
+                                    <select id="heart-thal" class="form-control">
+                                        <option value="1">1 - Normal</option>
+                                        <option value="2" selected>2 - Fixed Defect</option>
+                                        <option value="3">3 - Reversible Defect</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="primary-action-btn">
+                                <i class="fa-solid fa-heart-pulse"></i> Evaluate Cardiovascular Risk
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Parkinson's Voice Biomarker Diagnostic Form -->
+                    <div id="spec-form-parkinsons" style="display:none;">
+                        <div class="glass-card-header">
+                            <div>
+                                <h3 class="card-title"><i class="fa-solid fa-brain"
+                                        style="color:var(--accent-purple);"></i> Parkinson's Voice Biomarkers</h3>
+                                <p class="card-subtitle">UCI acoustic tremor measurements and fundamental frequencies
+                                </p>
+                            </div>
+                            <div class="presets-container" style="margin:0;">
+                                <button type="button" class="preset-pill"
+                                    onclick="applySpecializedPreset('parkinsons', 'healthy')">Healthy Acoustic</button>
+                                <button type="button" class="preset-pill"
+                                    onclick="applySpecializedPreset('parkinsons', 'instability')">Vocal Instability
+                                    Pattern</button>
+                            </div>
+                        </div>
+
+                        <form id="form-parkinsons-prediction">
+                            <div class="form-grid-3">
+                                <div class="form-group">
+                                    <label>MDVP:Fo(Hz) Fundamental Freq</label>
+                                    <input type="number" step="0.1" id="park-fo" class="form-control" value="154.0"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>MDVP:Fhi(Hz) Max Freq</label>
+                                    <input type="number" step="0.1" id="park-fhi" class="form-control" value="197.0"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>MDVP:Flo(Hz) Min Freq</label>
+                                    <input type="number" step="0.1" id="park-flo" class="form-control" value="116.0"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>MDVP:Jitter(%)</label>
+                                    <input type="number" step="0.0001" id="park-jitter" class="form-control"
+                                        value="0.006" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>MDVP:Shimmer</label>
+                                    <input type="number" step="0.001" id="park-shimmer" class="form-control"
+                                        value="0.029" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Harmonics-to-Noise (HNR)</label>
+                                    <input type="number" step="0.1" id="park-hnr" class="form-control" value="21.8"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>RPDE (Recurrence Density)</label>
+                                    <input type="number" step="0.01" id="park-rpde" class="form-control" value="0.49"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>DFA (Fluctuation Analysis)</label>
+                                    <input type="number" step="0.01" id="park-dfa" class="form-control" value="0.71"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Spread1 (Frequency Variation)</label>
+                                    <input type="number" step="0.1" id="park-spread1" class="form-control" value="-5.6"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Spread2</label>
+                                    <input type="number" step="0.01" id="park-spread2" class="form-control" value="0.22"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Pitch Period Entropy (PPE)</label>
+                                    <input type="number" step="0.01" id="park-ppe" class="form-control" value="0.20"
+                                        required>
+                                </div>
+                            </div>
+                            <button type="submit" class="primary-action-btn">
+                                <i class="fa-solid fa-wave-square"></i> Analyze Acoustic Vocal Tremor
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+
+                <!-- Right: Specialized Result Box -->
+                <div id="specialized-result-box">
+                    <div class="glass-card"
+                        style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px 20px;">
+                        <i class="fa-solid fa-laptop-medical"
+                            style="font-size:3rem; color:rgba(255,255,255,0.15); margin-bottom:15px;"></i>
+                        <h3 style="font-size:1.2rem; font-weight:700; color:#fff; margin-bottom:6px;">Specialized
+                            Diagnostic Lab Ready</h3>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); max-width:320px;">Enter patient test
+                            measurements or choose a preset profile, then click evaluate to generate a risk
+                            stratification report.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             TAB 3: AI Clinical Assistant (Conversational Triage Chatbot)
+             ====================================================================== -->
+        <section id="tab-chat" class="tab-pane">
+            <div class="chat-container-layout">
+
+                <!-- Chat Window Header -->
+                <div class="glass-card"
+                    style="border-radius:var(--radius-lg) var(--radius-lg) 0 0; border-bottom:none; padding:1.25rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div class="chat-avatar"
+                                style="background:linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo)); color:#fff;">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size:1.15rem; font-weight:700; color:#fff;">MediCare AI Clinical
+                                    Assistant</h3>
+                                <p style="font-size:0.78rem; color:var(--accent-emerald);">
+                                    <i class="fa-solid fa-circle" style="font-size:0.55rem;"></i> Online • Natural
+                                    Language Symptom Extractor
+                                </p>
+                            </div>
+                        </div>
+                        <button class="btn-secondary" style="font-size:0.75rem;"
+                            onclick="document.getElementById('chat-messages-box').innerHTML = '';">
+                            <i class="fa-solid fa-trash"></i> Clear Chat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Stream -->
+                <div class="chat-messages-box" id="chat-messages-box">
+                    <div class="chat-message assistant">
+                        <div class="chat-avatar"><i class="fa-solid fa-robot"></i></div>
+                        <div class="chat-bubble">
+                            Hello! I am your <strong>MediCare AI Clinical Assistant</strong>. 🩺<br><br>
+                            You can describe your symptoms in natural language (e.g. <em>"I have high fever, chills, and
+                                headache since yesterday"</em>), and I will automatically extract the symptom markers
+                            and run our diagnostic model.<br><br>
+                            How can I help you today?
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Controls -->
+                <div class="chat-input-wrapper">
+                    <!-- Suggested Query Chips -->
+                    <div class="suggested-prompts-flex" id="chat-suggested-prompts">
+                        <div class="prompt-chip"
+                            onclick="sendPromptText('I have severe fever, body chills, and headache')">
+                            <i class="fa-solid fa-sparkles"></i> Fever, chills, and headache
+                        </div>
+                        <div class="prompt-chip"
+                            onclick="sendPromptText('I have acute stomach pain, acidity, and vomiting')">
+                            <i class="fa-solid fa-sparkles"></i> Stomach pain & vomiting
+                        </div>
+                        <div class="prompt-chip"
+                            onclick="sendPromptText('I am experiencing shortness of breath and chest tightness')">
+                            <i class="fa-solid fa-sparkles"></i> Breathlessness & chest pain
+                        </div>
+                        <div class="prompt-chip" onclick="sendPromptText('How can I check my diabetes risk?')">
+                            <i class="fa-solid fa-sparkles"></i> Check diabetes risk
+                        </div>
+                    </div>
+
+                    <div class="chat-input-bar">
+                        <input type="text" id="chat-input-text" class="search-input"
+                            placeholder="Type your health question or symptoms..." style="padding-left:1.25rem;">
+                        <button id="chat-send-btn" class="primary-action-btn"
+                            style="width:auto; margin:0; padding:0 1.5rem;">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             TAB 4: Doctor & Hospital Locator
+             ====================================================================== -->
+        <section id="tab-locator" class="tab-pane">
+            <div class="glass-card" style="margin-bottom:1.5rem; padding:1rem 1.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <h3 class="card-title"><i class="fa-solid fa-location-dot"
+                                style="color:var(--accent-cyan);"></i> Healthcare Providers & Specialist Locator</h3>
+                        <p class="card-subtitle">Locate hospitals, emergency trauma centers, and specialty clinics by
+                            department</p>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <select id="hospital-dept-filter" class="form-control" style="width:200px;"
+                            onchange="loadHospitals(this.value)">
+                            <option value="">All Departments</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Endocrinology">Endocrinology</option>
+                            <option value="Dermatology">Dermatology</option>
+                            <option value="Gastroenterology">Gastroenterology</option>
+                            <option value="Pulmonology">Pulmonology</option>
+                            <option value="Emergency">Emergency Care</option>
+                        </select>
+                        <button class="btn-secondary" onclick="loadHospitals('', true)">
+                            <i class="fa-solid fa-truck-medical"></i> 24/7 ER Only
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="locator-grid">
+                <!-- Interactive Leaflet Map -->
+                <div id="map-container"></div>
+
+                <!-- Hospital Cards Scroll -->
+                <div class="hospitals-list-scroll" id="hospitals-list-container">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             TAB 5: Disease Knowledge Base & Reference Directory
+             ====================================================================== -->
+        <section id="tab-knowledge" class="tab-pane">
+            <div class="glass-card" style="margin-bottom:1.5rem; padding:1.25rem 1.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <h3 class="card-title"><i class="fa-solid fa-book-medical"
+                                style="color:var(--accent-cyan);"></i> Clinical Disease Knowledge Base</h3>
+                        <p class="card-subtitle">Comprehensive descriptions, precautions, medication classes, and diets
+                            for 42 conditions</p>
+                    </div>
+                    <div style="width:300px;">
+                        <input type="text" id="kb-search-input" class="search-input"
+                            placeholder="Search disease catalogue..." style="padding-left:1.25rem;">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1.25rem;"
+                id="knowledge-cards-grid">
+                <!-- Populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             TAB 6: Patient Health Dashboard & Analytics History
+             ====================================================================== -->
+        <section id="tab-history" class="tab-pane">
+
+            <!-- Metric Counters Grid -->
+            <div class="stats-counter-grid">
+                <div class="stat-metric-card">
+                    <span style="font-size:0.8rem; color:var(--text-secondary);"><i
+                            class="fa-solid fa-hospital-user"></i> Total Predictions</span>
+                    <div class="stat-number" id="stat-total-preds">0</div>
+                    <span style="font-size:0.72rem; color:var(--accent-cyan);">Combined General & Lab Tests</span>
+                </div>
+                <div class="stat-metric-card">
+                    <span style="font-size:0.8rem; color:var(--text-secondary);"><i class="fa-solid fa-stethoscope"></i>
+                        Symptom Checkers</span>
+                    <div class="stat-number" id="stat-symptom-checks">0</div>
+                    <span style="font-size:0.72rem; color:var(--accent-emerald);">Multi-Class Inferences</span>
+                </div>
+                <div class="stat-metric-card">
+                    <span style="font-size:0.8rem; color:var(--text-secondary);"><i class="fa-solid fa-microscope"></i>
+                        Specialized Tests</span>
+                    <div class="stat-number" id="stat-specialized-tests">0</div>
+                    <span style="font-size:0.72rem; color:var(--accent-purple);">Diabetes / Heart / Parkinson's</span>
+                </div>
+                <div class="stat-metric-card">
+                    <span style="font-size:0.8rem; color:var(--text-secondary);"><i class="fa-solid fa-users"></i>
+                        Patient Accounts</span>
+                    <div class="stat-number" id="stat-registered-users">0</div>
+                    <span style="font-size:0.72rem; color:var(--accent-amber);">Active Healthcare Profiles</span>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="glass-card">
+                    <div class="glass-card-header">
+                        <h4 class="card-title" style="font-size:1rem;"><i class="fa-solid fa-chart-column"></i> Top
+                            Diagnosed Conditions</h4>
+                    </div>
+                    <canvas id="chart-top-diseases" height="180"></canvas>
+                </div>
+                <div class="glass-card">
+                    <div class="glass-card-header">
+                        <h4 class="card-title" style="font-size:1rem;"><i class="fa-solid fa-chart-pie"></i> Triage
+                            Severity Breakdown</h4>
+                    </div>
+                    <canvas id="chart-severity-distribution" height="180"></canvas>
+                </div>
+            </div>
+
+            <!-- History Logs Table -->
+            <div class="glass-card">
+                <div class="glass-card-header">
+                    <div>
+                        <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Diagnostic Consultation
+                            History</h3>
+                        <p class="card-subtitle">Stored patient diagnoses, probability scores, and severity rankings</p>
+                    </div>
+                    <button class="btn-secondary" style="font-size:0.8rem;" onclick="loadHistoryAndStats()">
+                        <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="data-table-wrapper">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Assessment Type</th>
+                                <th>Diagnosis / Result</th>
+                                <th>Confidence / Risk</th>
+                                <th>Patient Account</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================================
+             TAB 7: Admin & ML Model Observatory
+             ====================================================================== -->
+        <section id="tab-admin" class="tab-pane">
+            <div class="glass-card" style="margin-bottom:1.5rem; padding:1.25rem 1.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <h3 class="card-title"><i class="fa-solid fa-sliders" style="color:var(--accent-cyan);"></i>
+                            Machine Learning Model Observatory</h3>
+                        <p class="card-subtitle">Real-time performance metrics, cross-validation scores, and
+                            hot-retraining controls</p>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button id="admin-retrain-btn" class="primary-action-btn"
+                            style="margin:0; padding:0.6rem 1.25rem; font-size:0.88rem;">
+                            <i class="fa-solid fa-rotate"></i> Retrain All Models
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1.25rem;"
+                id="admin-metrics-cards-grid">
+                <!-- Populated by JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================================================
+         MODALS
+         ========================================================================== -->
+
+    <!-- 1. Authentication Modal -->
+    <div id="auth-modal" class="modal-backdrop">
+        <div class="modal-window">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                <h3 style="font-size:1.3rem; font-weight:800; color:#fff;">Account Access</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.2rem; color:var(--text-muted);"
+                    onclick="closeModal('auth-modal')"></i>
+            </div>
+
+            <!-- Fast Demo Login Buttons -->
+            <div
+                style="background:rgba(15,23,42,0.6); padding:12px; border-radius:10px; margin-bottom:16px; border:1px solid var(--border-color);">
+                <div
+                    style="font-size:0.75rem; font-weight:700; color:var(--accent-cyan); text-transform:uppercase; margin-bottom:6px;">
+                    ⚡ 1-Click Instant Demo Access
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button type="button" class="btn-secondary" style="flex:1; font-size:0.78rem; padding:5px;"
+                        onclick="quickDemoLogin('patient')">
+                        <i class="fa-solid fa-user"></i> Patient
+                    </button>
+                    <button type="button" class="btn-secondary" style="flex:1; font-size:0.78rem; padding:5px;"
+                        onclick="quickDemoLogin('doctor')">
+                        <i class="fa-solid fa-user-doctor"></i> Doctor
+                    </button>
+                    <button type="button" class="btn-secondary" style="flex:1; font-size:0.78rem; padding:5px;"
+                        onclick="quickDemoLogin('admin')">
+                        <i class="fa-solid fa-user-shield"></i> Admin
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login / Register Tab Toggle -->
+            <div class="info-subtabs" style="margin-bottom:1rem;">
+                <button id="auth-tab-login" class="info-subtab-btn active">Sign In</button>
+                <button id="auth-tab-register" class="info-subtab-btn">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="login-email" class="form-control" value="patient@medicare.io" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" class="form-control" value="Patient@123" required>
+                </div>
+                <button type="submit" class="primary-action-btn" style="margin-top:1rem;">
+                    <i class="fa-solid fa-lock"></i> Sign In to Portal
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" style="display:none;">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="reg-name" class="form-control" placeholder="Jane Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="reg-email" class="form-control" placeholder="jane@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="reg-password" class="form-control" minlength="6" placeholder="••••••••"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label>Account Role</label>
+                    <select id="reg-role" class="form-control">
+                        <option value="patient">Patient Profile</option>
+                        <option value="doctor">Medical Clinician / Doctor</option>
+                        <option value="admin">System Administrator</option>
+                    </select>
+                </div>
+                <button type="submit" class="primary-action-btn" style="margin-top:1rem;">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Disease Detail Protocol Modal -->
+    <div id="disease-detail-modal" class="modal-backdrop">
+        <div class="modal-window" style="max-width:650px;">
+            <div style="display:flex; justify-content:flex-end; margin-bottom:6px;">
+                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.2rem; color:var(--text-muted);"
+                    onclick="closeModal('disease-detail-modal')"></i>
+            </div>
+            <div id="disease-modal-content">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Printable Medical Summary PDF Modal -->
+    <div id="printable-summary-modal" class="modal-backdrop">
+        <div class="modal-window" style="max-width:700px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 style="font-size:1.1rem; font-weight:700; color:#fff;">Medical Assessment Summary</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.2rem; color:var(--text-muted);"
+                    onclick="closeModal('printable-summary-modal')"></i>
+            </div>
+            <div id="printable-summary-content">
+                <!-- Injected via JavaScript -->
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="primary-action-btn" style="flex:1; margin:0;" onclick="printSummary()">
+                    <i class="fa-solid fa-print"></i> Print / Save as PDF
+                </button>
+                <button class="btn-secondary" style="flex:1;" onclick="closeModal('printable-summary-modal')">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Emergency Hotline Modal -->
+    <div id="emergency-hotline-modal" class="modal-backdrop">
+        <div class="modal-window" style="max-width:480px; text-align:center;">
+            <div
+                style="width:60px; height:60px; border-radius:50%; background:rgba(244,63,94,0.2); color:var(--accent-rose); display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 15px auto;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h2 style="font-size:1.4rem; font-weight:800; color:#fff; margin-bottom:6px;">Emergency Medical Contacts
+            </h2>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:20px;">
+                If you or someone around you is experiencing severe chest pain, sudden numbness, unconsciousness, or
+                respiratory failure, please call emergency services immediately:
+            </p>
+
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+                <a href="tel:911" class="btn-danger"
+                    style="text-decoration:none; padding:12px; font-size:1.1rem; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fa-solid fa-phone"></i> Dial 911 (United States / Emergency)
+                </a>
+                <a href="tel:112" class="btn-danger"
+                    style="text-decoration:none; padding:12px; font-size:1.1rem; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(244,63,94,0.1);">
+                    <i class="fa-solid fa-phone"></i> Dial 112 (European Union & International)
+                </a>
+                <a href="tel:108" class="btn-danger"
+                    style="text-decoration:none; padding:12px; font-size:1.1rem; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(244,63,94,0.1);">
+                    <i class="fa-solid fa-phone"></i> Dial 108 (India Emergency Ambulance)
+                </a>
+            </div>
+
+            <button class="btn-secondary" style="width:100%;" onclick="closeModal('emergency-hotline-modal')">
+                Dismiss
+            </button>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Main Client JS Application -->
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>
