@@ -3,6 +3,7 @@ Services Layer Package for Human Disease Diagnosis System.
 """
 
 from backend.services.auth_service import (
+    get_jwt_secret,
     hash_password,
     verify_password,
     create_access_token,
@@ -13,6 +14,7 @@ from backend.services.auth_service import (
 )
 
 __all__ = [
+    "get_jwt_secret",
     "hash_password",
     "verify_password",
     "create_access_token",

@@ -5,10 +5,14 @@ A Full-Stack Python Machine Learning Healthcare Application.
 
 import os
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+
+# Automatically load environment variables from .env file
+load_dotenv()
 
 from backend.database.database import init_db
 from machine_learning.predictor import predictor_engine

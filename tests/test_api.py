@@ -3,6 +3,8 @@ Automated Test Suite for Human Disease Diagnosis System REST API.
 """
 
 import os
+os.environ.setdefault("JWT_SECRET", "test_mock_jwt_secret_key_only_for_testing")
+
 import pytest
 from fastapi.testclient import TestClient
 from backend.main import app
