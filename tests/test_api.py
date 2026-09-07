@@ -5,8 +5,8 @@ Automated Test Suite for Human Disease Diagnosis System REST API.
 import os
 import pytest
 from fastapi.testclient import TestClient
-from main import app
-from database import init_db
+from backend.main import app
+from backend.database.database import init_db
 
 init_db()
 client = TestClient(app)

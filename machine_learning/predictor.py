@@ -1,6 +1,6 @@
 """
 Unified Prediction & Clinical Decision Support Engine.
-Loads serialized machine learning models and performs:
+Loads serialized machine learning models from ml_models/ and performs:
 - Top-K Multi-class General Symptom Prediction
 - Emergency Red-Flag Triage Detection
 - Severity & Urgency Index Calculation
@@ -15,7 +15,7 @@ import pandas as pd
 from typing import List, Dict, Any, Optional
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODELS_DIR = os.path.join(BASE_DIR, "models")
+MODELS_DIR = os.path.join(BASE_DIR, "ml_models")
 RAW_DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
 
 # Red-flag emergency symptoms that warrant immediate hospital triage
@@ -56,7 +56,7 @@ class ClinicalPredictorEngine:
         self._initialized = True
         
     def load_all_models(self):
-        """Loads all serialized joblib model artifacts."""
+        """Loads all serialized joblib model artifacts from ml_models/."""
         symptom_path = os.path.join(MODELS_DIR, "symptom_model.joblib")
         diabetes_path = os.path.join(MODELS_DIR, "diabetes_model.joblib")
         heart_path = os.path.join(MODELS_DIR, "heart_model.joblib")

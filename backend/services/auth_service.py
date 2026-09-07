@@ -1,5 +1,5 @@
 """
-Authentication and JWT security module for Human Disease Diagnosis System.
+Authentication and JWT security service for Human Disease Diagnosis System.
 Supports bcrypt password hashing and JWT token issuance and validation.
 """
 

@@ -1,8 +1,9 @@
 """
-Specialized Heart Disease Prediction Model Training.
-Uses UCI Cleveland Heart Disease clinical features:
-[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
+Specialized Diabetes Prediction Model Training.
+Uses Pima Indians Clinical Dataset format:
+[Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]
 Trains and compares Logistic Regression, Random Forest, and SVM with StandardScaler.
+Saves model and metrics to ml_models/.
 """
 
 import os
@@ -19,16 +20,16 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
-MODELS_DIR = os.path.join(BASE_DIR, "models")
+MODELS_DIR = os.path.join(BASE_DIR, "ml_models")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-def train_heart_model():
-    print("=== Training Specialized Heart Disease Classifier ===")
-    df = pd.read_csv(os.path.join(DATA_DIR, "heart.csv"))
+def train_diabetes_model():
+    print("=== Training Specialized Diabetes Classifier ===")
+    df = pd.read_csv(os.path.join(DATA_DIR, "diabetes.csv"))
     
-    feature_cols = ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal"]
+    feature_cols = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"]
     X = df[feature_cols]
-    y = df["target"]
+    y = df["Outcome"]
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42, stratify=y)
     
@@ -37,7 +38,7 @@ def train_heart_model():
     X_test_scaled = scaler.transform(X_test)
     
     models = {
-        "Random Forest": RandomForestClassifier(n_estimators=120, max_depth=12, random_state=42),
+        "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42),
         "Logistic Regression": LogisticRegression(max_iter=300, random_state=42),
         "SVM (RBF)": SVC(probability=True, kernel="rbf", C=1.0, random_state=42)
     }
@@ -80,25 +81,25 @@ def train_heart_model():
         "scaler": scaler,
         "features": feature_cols,
         "feature_importances": dict(zip(feature_cols, [round(float(v), 4) for v in getattr(best_clf, "feature_importances_", np.ones(len(feature_cols)) / len(feature_cols))])) if hasattr(best_clf, "feature_importances_") else {},
-        "target_names": ["Low/Normal Risk", "High Risk of Heart Disease"],
+        "target_names": ["Non-Diabetic", "Diabetic"],
         "version": "1.0.0"
     }
     
-    save_path = os.path.join(MODELS_DIR, "heart_model.joblib")
+    save_path = os.path.join(MODELS_DIR, "diabetes_model.joblib")
     joblib.dump(bundle, save_path)
     
     metrics = {
-        "model_type": "Specialized Heart Disease Predictor",
+        "model_type": "Specialized Diabetes Predictor",
         "selected_model": best_name,
         "comparison": comparison,
         "features": feature_cols,
         "samples_count": len(df)
     }
-    with open(os.path.join(MODELS_DIR, "heart_metrics.json"), "w") as f:
+    with open(os.path.join(MODELS_DIR, "diabetes_metrics.json"), "w") as f:
         json.dump(metrics, f, indent=2)
         
-    print(f"Saved heart model to {save_path}\n")
+    print(f"Saved diabetes model to {save_path}\n")
     return metrics
 
 if __name__ == "__main__":
-    train_heart_model()
+    train_diabetes_model()

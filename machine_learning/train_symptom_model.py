@@ -6,7 +6,7 @@ Trains and compares:
 - Decision Tree Classifier
 - Logistic Regression
 - Support Vector Machine (SVC)
-Saves the top-performing serialized model, feature definitions, and full evaluation metrics.
+Saves the top-performing serialized model, feature definitions, and full evaluation metrics to ml_models/.
 """
 
 import os
@@ -25,7 +25,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
-MODELS_DIR = os.path.join(BASE_DIR, "models")
+MODELS_DIR = os.path.join(BASE_DIR, "ml_models")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
 def train_symptom_models():

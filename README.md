@@ -36,40 +36,67 @@ A full-stack, Machine Learning-powered clinical decision support platform built 
 
 ---
 
-## 🏗️ Project Architecture
+## 🏗️ Clean Project Architecture
 
 ```
-diagnosis-system/
-├── main.py                     # FastAPI server entry point and route aggregator
-├── config.py                   # Configuration and environment variables
-├── database.py                 # SQLite database initialization, schema, and seed data
-├── auth.py                     # JWT token issuance, bcrypt hashing, role guards
-├── requirements.txt            # Python dependencies
-├── ml/
-│   ├── data_loader.py          # Data generation and preprocessing pipeline
-│   ├── predictor.py            # Unified inference engine and clinical metadata lookup
-│   ├── train_symptom_model.py  # 42-disease multi-class classifier training
-│   ├── train_diabetes_model.py # Diabetes classifier training
-│   ├── train_heart_model.py    # Heart disease classifier training
-│   └── train_parkinsons_model.py# Parkinson's classifier training
-├── routes/
-│   ├── predict.py              # Prediction endpoints (/api/predict/*)
-│   ├── diseases.py             # Disease & symptom catalogue (/api/diseases, /api/symptoms)
-│   ├── auth.py                 # Authentication endpoints (/api/auth/*)
-│   ├── history.py              # User history & dashboard stats (/api/history/*)
-│   ├── chat.py                 # AI conversational triage assistant (/api/chat)
-│   ├── locator.py              # Healthcare provider locator (/api/hospitals)
-│   └── admin.py                # Model metrics and retraining (/api/admin/*)
-├── models/                     # Serialized .joblib model artifacts & evaluation metrics
+Project/
+├── frontend/
+│   ├── templates/
+│   │   └── index.html                # Single page responsive clinical interface
+│   └── static/
+│       ├── css/
+│       │   └── main.css              # Glassmorphism dark mode healthcare stylesheet
+│       ├── js/
+│       │   └── app.js                # Frontend client controller & Chart.js/Leaflet integration
+│       └── images/                   # UI asset icons & imagery
+│
+├── backend/
+│   ├── main.py                       # FastAPI entry point, static & template mounts, router aggregation
+│   ├── api/                          # REST API endpoint routers
+│   │   ├── admin.py                  # ML observatory & retraining (/api/admin/*)
+│   │   ├── auth.py                   # User registration, JWT login & profiles (/api/auth/*)
+│   │   ├── chat.py                   # NLP symptom extraction chatbot (/api/chat)
+│   │   ├── diseases.py               # Disease & symptom catalogue (/api/diseases, /api/symptoms)
+│   │   ├── history.py                # Consultation logs & analytics stats (/api/history/*)
+│   │   ├── locator.py                # Hospital & specialist clinic finder (/api/hospitals)
+│   │   └── predict.py                # Symptom & specialized risk predictors (/api/predict/*)
+│   ├── database/
+│   │   ├── __init__.py               # Database layer package exports
+│   │   └── database.py               # SQLite connection, schema tables, and data seeders
+│   └── services/
+│       ├── __init__.py               # Service layer package exports
+│       └── auth_service.py           # JWT security, bcrypt password hashing, role guards
+│
+├── machine_learning/
+│   ├── __init__.py                   # ML package exports
+│   ├── data_loader.py                # Clinical dataset synthesis and preprocessing pipeline
+│   ├── predictor.py                  # ClinicalPredictorEngine singleton inference & lookup
+│   ├── train_symptom_model.py        # 42-disease multi-class classifier training
+│   ├── train_diabetes_model.py       # Specialized diabetes risk classifier training
+│   ├── train_heart_model.py          # Specialized heart disease classifier training
+│   └── train_parkinsons_model.py     # Specialized Parkinson's voice classifier training
+│
+├── ml_models/                        # Serialized .joblib model artifacts & evaluation metrics
+│   ├── diabetes_metrics.json
+│   ├── diabetes_model.joblib
+│   ├── heart_metrics.json
+│   ├── heart_model.joblib
+│   ├── parkinsons_metrics.json
+│   ├── parkinsons_model.joblib
+│   ├── symptom_metrics.json
+│   └── symptom_model.joblib
+│
 ├── data/
-│   └── raw/                    # Clinical CSV datasets and metadata catalogues
-├── static/
-│   ├── css/main.css            # Dark slate healthcare glassmorphism stylesheet
-│   └── js/app.js               # Client-side SPA controller
-├── templates/
-│   └── index.html              # Modern single page application layout
-└── tests/
-    └── test_api.py             # Automated pytest suite
+│   ├── diagnosis_system.db           # SQLite database
+│   ├── raw/                          # 10 clinical reference CSV datasets
+│   └── processed/
+│
+├── tests/
+│   └── test_api.py                   # Automated pytest suite (10 unit & integration tests)
+│
+├── main.py                           # Root launcher delegating to backend.main:app
+├── requirements.txt                  # Python dependencies
+└── README.md                         # Presentation & technical documentation
 ```
 
 ---
@@ -83,16 +110,21 @@ pip install -r requirements.txt
 
 ### 2. Generate Datasets & Train Models (Pre-trained models included)
 ```bash
-python ml/data_loader.py
-python ml/train_symptom_model.py
-python ml/train_diabetes_model.py
-python ml/train_heart_model.py
-python ml/train_parkinsons_model.py
+python -m machine_learning.data_loader
+python -m machine_learning.train_symptom_model
+python -m machine_learning.train_diabetes_model
+python -m machine_learning.train_heart_model
+python -m machine_learning.train_parkinsons_model
 ```
 
 ### 3. Run the Server
+You can start the server using either:
 ```bash
-python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+python main.py
+```
+or
+```bash
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
@@ -101,6 +133,10 @@ Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 - ReDoc: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
 ### 5. Run Automated Test Suite
+```bash
+pytest
+```
+or
 ```bash
 python -m pytest tests/ -v
 ```

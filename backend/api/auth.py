@@ -5,8 +5,8 @@ Authentication Endpoints for User Registration, Login, and Profile Management.
 from typing import Optional, Dict, Any
 from pydantic import BaseModel, EmailStr, Field
 from fastapi import APIRouter, HTTPException, Depends, status
-from database import get_db
-from auth import hash_password, verify_password, create_access_token, get_current_user
+from backend.database.database import get_db
+from backend.services.auth_service import hash_password, verify_password, create_access_token, get_current_user
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 

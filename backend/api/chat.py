@@ -8,7 +8,7 @@ import re
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from fastapi import APIRouter
-from ml.predictor import predictor_engine, EMERGENCY_SYMPTOMS
+from machine_learning.predictor import predictor_engine, EMERGENCY_SYMPTOMS
 
 router = APIRouter(prefix="/api/chat", tags=["Chatbot Assistant"])
 

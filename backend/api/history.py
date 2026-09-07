@@ -5,8 +5,8 @@ Prediction History and Health Analytics Routes.
 import json
 from typing import Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Depends, Query
-from database import get_db
-from auth import get_current_user_optional, get_current_user
+from backend.database.database import get_db
+from backend.services.auth_service import get_current_user_optional, get_current_user
 
 router = APIRouter(prefix="/api/history", tags=["History & Analytics"])
 

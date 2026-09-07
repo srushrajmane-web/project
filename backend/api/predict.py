@@ -7,9 +7,9 @@ from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException, Depends, status
 
-from ml.predictor import predictor_engine
-from auth import get_current_user_optional
-from database import get_db
+from machine_learning.predictor import predictor_engine
+from backend.services.auth_service import get_current_user_optional
+from backend.database.database import get_db
 
 router = APIRouter(prefix="/api/predict", tags=["Predictions"])
 

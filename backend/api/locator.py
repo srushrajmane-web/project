@@ -5,7 +5,7 @@ Healthcare Provider and Specialist Clinic Locator API.
 import math
 from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, Query
-from database import get_db
+from backend.database.database import get_db
 
 router = APIRouter(prefix="/api/hospitals", tags=["Hospital Locator"])
 

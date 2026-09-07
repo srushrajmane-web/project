@@ -1,8 +1,11 @@
 """
-Specialized Diabetes Prediction Model Training.
-Uses Pima Indians Clinical Dataset format:
-[Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]
-Trains and compares Logistic Regression, Random Forest, and SVM with StandardScaler.
+Specialized Parkinson's Disease Prediction Model Training.
+Uses UCI Parkinson's Biomedical Voice Measurements:
+[MDVP:Fo(Hz), MDVP:Fhi(Hz), MDVP:Flo(Hz), MDVP:Jitter(%), MDVP:Jitter(Abs), MDVP:RAP,
+ MDVP:PPQ, Jitter:DDP, MDVP:Shimmer, MDVP:Shimmer(dB), Shimmer:APQ3, Shimmer:APQ5,
+ MDVP:APQ, Shimmer:DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]
+Trains and compares Random Forest, Logistic Regression, and SVM with StandardScaler.
+Saves model and metrics to ml_models/.
 """
 
 import os
@@ -19,16 +22,16 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
-MODELS_DIR = os.path.join(BASE_DIR, "models")
+MODELS_DIR = os.path.join(BASE_DIR, "ml_models")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-def train_diabetes_model():
-    print("=== Training Specialized Diabetes Classifier ===")
-    df = pd.read_csv(os.path.join(DATA_DIR, "diabetes.csv"))
+def train_parkinsons_model():
+    print("=== Training Specialized Parkinson's Disease Classifier ===")
+    df = pd.read_csv(os.path.join(DATA_DIR, "parkinsons.csv"))
     
-    feature_cols = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"]
+    feature_cols = [c for c in df.columns if c != "status"]
     X = df[feature_cols]
-    y = df["Outcome"]
+    y = df["status"]
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42, stratify=y)
     
@@ -37,9 +40,9 @@ def train_diabetes_model():
     X_test_scaled = scaler.transform(X_test)
     
     models = {
-        "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42),
-        "Logistic Regression": LogisticRegression(max_iter=300, random_state=42),
-        "SVM (RBF)": SVC(probability=True, kernel="rbf", C=1.0, random_state=42)
+        "Random Forest": RandomForestClassifier(n_estimators=120, max_depth=12, random_state=42),
+        "SVM (RBF)": SVC(probability=True, kernel="rbf", C=1.0, random_state=42),
+        "Logistic Regression": LogisticRegression(max_iter=300, random_state=42)
     }
     
     comparison = {}
@@ -80,25 +83,25 @@ def train_diabetes_model():
         "scaler": scaler,
         "features": feature_cols,
         "feature_importances": dict(zip(feature_cols, [round(float(v), 4) for v in getattr(best_clf, "feature_importances_", np.ones(len(feature_cols)) / len(feature_cols))])) if hasattr(best_clf, "feature_importances_") else {},
-        "target_names": ["Non-Diabetic", "Diabetic"],
+        "target_names": ["Healthy (No Parkinson's Indicators)", "Parkinson's Indicators Detected"],
         "version": "1.0.0"
     }
     
-    save_path = os.path.join(MODELS_DIR, "diabetes_model.joblib")
+    save_path = os.path.join(MODELS_DIR, "parkinsons_model.joblib")
     joblib.dump(bundle, save_path)
     
     metrics = {
-        "model_type": "Specialized Diabetes Predictor",
+        "model_type": "Specialized Parkinson's Predictor",
         "selected_model": best_name,
         "comparison": comparison,
         "features": feature_cols,
         "samples_count": len(df)
     }
-    with open(os.path.join(MODELS_DIR, "diabetes_metrics.json"), "w") as f:
+    with open(os.path.join(MODELS_DIR, "parkinsons_metrics.json"), "w") as f:
         json.dump(metrics, f, indent=2)
         
-    print(f"Saved diabetes model to {save_path}\n")
+    print(f"Saved parkinsons model to {save_path}\n")
     return metrics
 
 if __name__ == "__main__":
-    train_diabetes_model()
+    train_parkinsons_model()

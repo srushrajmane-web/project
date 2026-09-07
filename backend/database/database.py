@@ -9,7 +9,7 @@ import sqlite3
 from datetime import datetime
 import pandas as pd
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DB_PATH = os.path.join(BASE_DIR, "data", "diagnosis_system.db")
 RAW_DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
 

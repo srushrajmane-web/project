@@ -7,14 +7,14 @@ import os
 import json
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends
-from database import get_db
-from auth import get_current_user_optional, require_role
-from ml.predictor import predictor_engine
+from backend.database.database import get_db
+from backend.services.auth_service import get_current_user_optional, require_role
+from machine_learning.predictor import predictor_engine
 
 router = APIRouter(prefix="/api/admin", tags=["Admin & ML Observatory"])
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODELS_DIR = os.path.join(BASE_DIR, "models")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+MODELS_DIR = os.path.join(BASE_DIR, "ml_models")
 
 @router.get("/metrics")
 async def get_model_metrics():
@@ -53,10 +53,10 @@ async def trigger_model_retrain(
     Triggers retraining of models and hot-reloads model instances in memory.
     """
     try:
-        from ml.train_symptom_model import train_symptom_models
-        from ml.train_diabetes_model import train_diabetes_model
-        from ml.train_heart_model import train_heart_model
-        from ml.train_parkinsons_model import train_parkinsons_model
+        from machine_learning.train_symptom_model import train_symptom_models
+        from machine_learning.train_diabetes_model import train_diabetes_model
+        from machine_learning.train_heart_model import train_heart_model
+        from machine_learning.train_parkinsons_model import train_parkinsons_model
         
         results = {}
         if model_type in ["all", "symptom"]:

@@ -5,7 +5,7 @@ Routes for Disease Information Panel and Symptom Knowledge Base.
 import json
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Query
-from database import get_db
+from backend.database.database import get_db
 
 router = APIRouter(prefix="/api", tags=["Diseases & Symptoms"])
 
